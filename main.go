@@ -15,7 +15,7 @@ type URLEnhancer struct {
 
 // Method of URLEnhance struct to actually perform the enhancing.
 // args: http response writer, http request
-func (us *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
+func (ue *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
 	// if request method is not POST, error out
 	if r.Method != http.MethodPost {
 		http.Error(w, "Inbalid request method", http.StatusMethodNotAllowed)
@@ -32,7 +32,7 @@ func (us *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
 	// generate a unique enhanced key for the original URL
 	enhancedKey := generateShortKey()
 	// assign item in urls map, enhancedKey: originalURL
-	us.urls[enhancedKey] = originalURL
+	ue.urls[enhancedKey] = originalURL
 
 	// Construct the full enhanced URL
 	// TODO: replace with live version
@@ -50,6 +50,29 @@ func (us *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
         	</form>
 	`, originalURL, enhancedURL, enhancedURL)
 	fmt.Fprintf(w, responseHTML)
+}
+
+// URLEnhancer method to handle redirection from enhanced URL to original
+func (ue *URLEnhancer) HandleRedirect(w http.ResponseWriter, r *http.Request) {
+	// get enhanced key portion of request url path
+	enhancedKey := r.URL.Path[len("/better/"):]
+	// if empty string, error out
+	if enhancedKey == "" {
+		http.Error(w, "Enhanced key is missing", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve the original URL from the `urls` map using the enhanced key
+	originalURL, found := ue.urls[enhancedKey]
+	// if not found in map, error out
+	if !found {
+		http.Error(w, "Enhanced key not found", http.StatusNotFound)
+		return
+	}
+
+	// and redirect the user to the original URL
+	http.Redirect(w, r, originalURL, http.StatusMovedPermanently)
+
 }
 
 // function to create a new unique enhanced key for the original URL
