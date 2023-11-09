@@ -36,7 +36,7 @@ func (ue *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
 
 	// Construct the full enhanced URL
 	// TODO: replace with live version
-	enhancedURL := fmt.Sprintf("http://localhost:8080/better/%s", enhancedKey)
+	enhancedURL := fmt.Sprintf("http://localhost:8080/enhanced/%s", enhancedKey)
 
 	// Render the HTML response with the enhanced URL
 	w.Header().Set("Content-Type", "text/html")
@@ -55,7 +55,7 @@ func (ue *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
 // URLEnhancer method to handle redirection from enhanced URL to original
 func (ue *URLEnhancer) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	// get enhanced key portion of request url path
-	enhancedKey := r.URL.Path[len("/better/"):]
+	enhancedKey := r.URL.Path[len("/enhanced/"):]
 	// if empty string, error out
 	if enhancedKey == "" {
 		http.Error(w, "Enhanced key is missing", http.StatusBadRequest)
@@ -100,4 +100,19 @@ func generateShortKey() string {
 	}
 	// and return the filled byte slice enhancedKey as (joined) a string
 	return string(enhancedKey)
+}
+
+func main() {
+	// pointer to URLEnhancer, allocating memory for urls
+	enhancer := &URLEnhancer{
+		urls: make(map[string]string),
+	}
+	
+	// handle URL enhancing and redirection via methods defined above
+	http.HandleFunc("/enhance", enhancer.HandleEnhance)
+	http.HandleFunc("/enhance/", enhancer.HandleRedirect)
+
+	// TODO: refactor for live app. using localhost now for testing
+	fmt.Println("URL Enhancer is running on :8080")
+	http.ListenAndServe(":8080", nil)
 }
