@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "html/template"
     "math/rand"
     "net/http"
     "time"
@@ -9,51 +10,41 @@ import (
 
 // struct to contain urls, which is simply a map containing 
 // enhancedKeys as keys and original URLs as values
-type URLEnhancer struct {
+type UrlMap struct {
     urls map[string]string
+}
+
+// struct for injecting variables into template HTML
+type templateUpdate struct {
+	enhanced bool
+	enhancedUrl string
 }
 
 // Method of URLEnhance struct to actually perform the enhancing.
 // args: http response writer, http request
-func (ue *URLEnhancer) HandleEnhance(w http.ResponseWriter, r *http.Request) {
-	// if request method is not POST, error out
-	if r.Method != http.MethodPost {
-		http.Error(w, "Inbalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// if url from request is missing, error out
-	originalURL := r.FormValue("url")
-	if originalURL == "" {
-		http.Error(w, "URL parameter is missing", http.StatusBadRequest)
-		return
-	}
-
+// returns: HTML string to be rendered, including link to the enhanced URL
+func EnhanceUrl(inputUrl string) string {
 	// generate a unique enhanced key for the original URL
 	enhancedKey := generateShortKey()
+	// enhance the shortKey
+	// TODO: implement enhanceShortKey()
+	// enhancedKey := enhanceShortKey(shortKey)
 	// assign item in urls map, enhancedKey: originalURL
-	ue.urls[enhancedKey] = originalURL
 
 	// Construct the full enhanced URL
 	// TODO: replace with live version
 	enhancedURL := fmt.Sprintf("http://localhost:8080/enhanced/%s", enhancedKey)
 
 	// Render the HTML response with the enhanced URL
-	w.Header().Set("Content-Type", "text/html")
 	responseHTML := fmt.Sprintf(`
-		<h1>gorter URL Enhancer</h1>
-	        <p>Original URL: %s</p>
         	<p>Better URL: <a href="%s">%s</a></p>
-        	<form method="post" action="/enhanced">
-            		<input type="text" name="url" placeholder="Enter a URL">
-            		<input type="submit" value="Enhance">
-        	</form>
-	`, originalURL, enhancedURL, enhancedURL)
-	fmt.Fprintf(w, responseHTML)
+	`, enhancedURL, enhancedURL)
+
+	return responseHTML
 }
 
-// URLEnhancer method to handle redirection from enhanced URL to original
-func (ue *URLEnhancer) HandleRedirect(w http.ResponseWriter, r *http.Request) {
+// UrlMap method to handle redirection from enhanced URL to original
+func (ue *UrlMap) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	// get enhanced key portion of request url path
 	enhancedKey := r.URL.Path[len("/enhanced/"):]
 	// if empty string, error out
@@ -72,7 +63,6 @@ func (ue *URLEnhancer) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 
 	// and redirect the user to the original URL
 	http.Redirect(w, r, originalURL, http.StatusMovedPermanently)
-
 }
 
 // function to create a new unique enhanced key for the original URL
@@ -103,16 +93,39 @@ func generateShortKey() string {
 }
 
 func main() {
-	// pointer to URLEnhancer, allocating memory for urls
-	enhancer := &URLEnhancer{
+	// pointer to UrlMap, allocating memory for urls
+	urlMap := &UrlMap{
 		urls: make(map[string]string),
 	}
 	
+	// base web app
+	tmpl := template.Must(template.ParseFiles("index.html"))
+
+	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			tmpl.Execute(w, nil)
+			return
+		}
+
+		// grab URL from input form when entered by user
+		inputUrl := r.FormValue("url")
+
+		// initiate URL enhancing
+		enhancedUrl := EnhanceUrl(inputUrl)
+		urlMap.urls[enhancedUrl] = inputUrl 
+
+		// fill in variables to insert into the web page
+		tmplUpdate := templateUpdate{
+			enhanced: true,
+			enhancedUrl: enhancedUrl,
+		}
+		tmpl.Execute(w, tmplUpdate)
+	})
+	
 	// handle URL enhancing and redirection via methods defined above
-	http.HandleFunc("/enhance", enhancer.HandleEnhance)
-	http.HandleFunc("/enhance/", enhancer.HandleRedirect)
+	// http.HandleFunc("/enhance/", enhancer.HandleRedirect)
 
 	// TODO: refactor for live app. using localhost now for testing
-	fmt.Println("URL Enhancer is running on :8080")
+	fmt.Println("URL Enhancer is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }

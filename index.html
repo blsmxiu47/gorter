@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<h1>gorter URL Enhancer</h1>
+<form method="POST">
+	<label>Original URL:</label><br />
+	<input type="text" name="url" placeholder="Enter a URL">
+	<input type="submit" value="Enhance">
+</form>
+{{if .enhanced}}
+	<p>Better URL: <a href="{{.enhancedUrl}}">{{.enhancedUrl}}</a></p>
+{{else}}
+{{end}}
