@@ -45,18 +45,9 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
-// Actually perform the URL shortening and spit out html
+// Actually perform the URL enhancing and spit out html
 // containing the new URL to the page
-// args: http response writer, http request
-// returns: HTML string to be rendered, including link to the enhanced URL
 func (um *URLMap) handleEnhance(w http.ResponseWriter, r *http.Request) {
-	// if request method is not POST, error out
-	// TODO: dont send both GET and POST in the first place?
-	//if r.Method != http.MethodPost {
-	//	http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-	//	return
-	//}
-
 	// if url from request is missing, error out
 	inputURL := r.FormValue("url")
 	if inputURL == "" {
@@ -64,39 +55,27 @@ func (um *URLMap) handleEnhance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("inputURL: %s", inputURL)
-
 	// generate a unique enhanced key for the original URL
 	shortKey := generateShortKey()
-	fmt.Printf("shortKey: %s\n", shortKey)
-
 	// enhance the shortKey
 	enhancedKey := enhanceText(shortKey)
-	fmt.Printf("enhancedKey: %s\n", enhancedKey)
 	// assign item in urls map, enhancedKey: originalURL
 	um.urls[enhancedKey] = inputURL
 
 	// Construct the full enhanced URL
 	enhancedURL := fmt.Sprintf("http://%s/enhanced/%s", MY_HOST, enhancedKey)
-	fmt.Printf("enhancedURL: %s\n", enhancedURL)
 
 	// Render the HTML response with the enhanced URL
-	//tmpl := template.Must(template.ParseFiles("templates/form.html"))
-	tmpl, err := template.ParseFiles("templates/form.html")
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-	// TODO: no error above, however tmpl not looking as expected here
-	fmt.Println(tmpl)
+	tmpl := template.Must(template.ParseFiles("templates/form.html"))
 	w.Header().Set("Content-Type", "text/html")
 	// Fill in variables to insert into the web page
 	tmplUpdate := templateUpdate{
 		Enhanced: true,
 		EnhancedURL: enhancedURL,
 	}
-	errr := tmpl.Execute(w, tmplUpdate)
-	if errr != nil {
-		fmt.Print(errr.Error())
+	err := tmpl.Execute(w, tmplUpdate)
+	if err != nil {
+		fmt.Print(err.Error())
 	}
 }
 
@@ -109,7 +88,6 @@ func (um *URLMap) handleRedirect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Enhanced key is missing", http.StatusBadRequest)
 		return
 	}
-
 	// Retrieve the original URL from the `urls` map using the enhanced key
 	originalURL, found := um.urls[enhancedKey]
 	// if not found in map, error out
@@ -117,7 +95,6 @@ func (um *URLMap) handleRedirect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Enhanced key not found", http.StatusNotFound)
 		return
 	}
-
 	// and redirect the user to the original URL
 	http.Redirect(w, r, originalURL, http.StatusMovedPermanently)
 }
@@ -149,8 +126,6 @@ func getSpeciesName(species_id int) string {
 
 	var responseObject Response
 	json.Unmarshal(body, &responseObject)
-	// TODO: remove print
-	fmt.Printf("Name returned: %s\n", responseObject.Name)
 	
 	return responseObject.Name
 }
@@ -166,7 +141,7 @@ func enhanceText(text string) string {
 	// name get inserted was this whole thing will get shuffled below)
 	b := append(name, text[:]...)
 	// Shuffle the letters
-	// math//rand has a pseudo-random shuffling function
+	// math/rand has a pseudo-random shuffling function
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	rand.Shuffle(len(b), func(i, j int) {
 		b[i], b[j] = b[j], b[i]
