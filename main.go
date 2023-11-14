@@ -103,7 +103,7 @@ func (um *URLMap) handleEnhance(w http.ResponseWriter, r *http.Request) {
 // URLMap method to handle redirection from enhanced URL to original
 func (um *URLMap) handleRedirect(w http.ResponseWriter, r *http.Request) {
 	// get enhanced key portion of request url path
-	enhancedKey := r.URL.Path[len("/enhance/"):]
+	enhancedKey := r.URL.Path[len("/enhanced/"):]
 	// if empty string, error out
 	if enhancedKey == "" {
 		http.Error(w, "Enhanced key is missing", http.StatusBadRequest)
