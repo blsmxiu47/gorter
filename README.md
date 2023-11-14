@@ -4,6 +4,12 @@ A URL ~~shortener~~enhancer written Go. Probably the 18 billionth one, but tonig
 
 ## dev TODOs
 
-* Get the UI to a functional state as a url shortener)
 * Prettify the UI (but not too much)
+
+## Getting started for development
+
+1. Clone the repo: `git clone https://github.com/blsmxiu47/gorter.git`
+2. Install dependencies and compile: `cd gorter && go build -o gorter.o main.go`
+3. Run the app: `./gorter.o`
+4. Open your browser to: `http://localhost:8080`
 
