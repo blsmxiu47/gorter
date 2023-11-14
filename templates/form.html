@@ -11,5 +11,9 @@
 			<input type="url" name="url" placeholder="Enter a URL" required>
 			<input type="submit" value="Enhance">
 		</form>
+		{{if .enhanced}}
+			<p>Better URL: <a href="{{.enhancedUrl}}">{{.enhancedUrl}}</a></p>
+		{{else}}
+		{{end}}
 	</body>
 </html>
