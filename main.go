@@ -24,8 +24,8 @@ type URLMap struct {
 
 // struct for injecting variables into template HTML
 type templateUpdate struct {
-	enhanced bool
-	enhancedURL string
+	Enhanced bool
+	EnhancedURL string
 }
 
 // At this moment there are 1017 apparently.. 
@@ -35,6 +35,15 @@ const MAX_SPECIES_ID = 1017
 
 // App host name (and port, if applicable)
 const MY_HOST = "localhost:8080"
+
+// App home page rendering
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		http.Redirect(w, r, "/enhance", http.StatusSeeOther)
+		return
+	}
+	http.ServeFile(w, r, "index.html")
+}
 
 // Actually perform the URL shortening and spit out html
 // containing the new URL to the page
@@ -82,10 +91,13 @@ func (um *URLMap) handleEnhance(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	// Fill in variables to insert into the web page
 	tmplUpdate := templateUpdate{
-		enhanced: true,
-		enhancedURL: enhancedURL,
+		Enhanced: true,
+		EnhancedURL: enhancedURL,
 	}
-	tmpl.Execute(w, tmplUpdate)
+	errr := tmpl.Execute(w, tmplUpdate)
+	if errr != nil {
+		fmt.Print(errr.Error())
+	}
 }
 
 // URLMap method to handle redirection from enhanced URL to original
@@ -194,21 +206,13 @@ func generateShortKey() string {
 
 
 func main() {
-	// base web app
-	//tmpl := template.Must(template.ParseFiles("index.html"))
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			http.Redirect(w, r, "/enhance", http.StatusSeeOther)
-			return
-		}
-		http.ServeFile(w, r, "index.html")
-	})
 
 	urls := &URLMap{
 		urls: make(map[string]string),
 	}
 
+	mux.HandleFunc("/", handleHome)
 	mux.HandleFunc("/enhance", urls.handleEnhance)
 	mux.HandleFunc("/enhanced/", urls.handleRedirect)
 
