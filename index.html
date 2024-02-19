@@ -3,13 +3,14 @@
 	<head>
 		<title>gorter</title>
 		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
 	</head>
 	<body>
-		<h1>gorter URL Enhancer</h1>
-		<form method="POST" action="/enhance">
-			<label>Original URL:</label><br />
-			<input type="url" name="url" placeholder="Enter a URL" required>
-			<input type="submit" value="Enhance">
+		<h1 class="app-heading">gorter URL Enhancer</h1>
+		<form class="url-form" method="POST" action="/enhance">
+			<label class="url-form__label">Original dsfdfURL:</label><br />
+			<input class="url-form__input" type="url" name="url" placeholder="Enter a URL" required>
+			<input class="url-form__input" type="submit" value="Enhance">
 		</form>
 	</body>
 </html>
