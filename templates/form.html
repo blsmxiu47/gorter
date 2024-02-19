@@ -13,7 +13,7 @@
 			<form class="url-form" method="POST" action="/enhance">
 				<label class="url-form__label">Original URL:</label><br />
 				<input class="url-form__input" type="url" name="url" placeholder="Enter a URL" required>
-				<input class="url-form__input" type="submit" value="Enhance">
+				<input class="url-form__submit" type="submit" value="Enhance">
 			</form>
 			{{if .Enhanced}}
 				<p class="result-text">Better URL: <a href="{{.EnhancedURL}}">{{.EnhancedURL}}</a></p>
