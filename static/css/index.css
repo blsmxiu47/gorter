@@ -3,16 +3,25 @@
 }
 
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
-    margin: 0 1rem;
-    padding: 0;
+    height: 100vh;
     background-color: rgb(248 250 252);
 }
 
-.app-heading {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 0.5rem;
+.app-header {
+    padding: 1rem;
+    background-color: #333;
+    color: #fff;
+}
+
+.app-header__title {
+    margin: 0;
+}
+
+main {
+    margin: 0 1rem;
+    padding: 0;
 }
 
 .url-form {
@@ -35,4 +44,5 @@ body {
     margin: 0;
     padding: 0.5rem 0;
     font-size: 1.25rem;
+    text-wrap: wrap;
 }

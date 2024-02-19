@@ -6,14 +6,18 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/index.css">
 	</head>
 	<body>
-		<h1 class="app-heading">gorter URL Enhancer</h1>
-		<form class="url-form" method="POST" action="/enhance">
-			<label class="url-form__label">Original URL:</label><br />
-			<input class="url-form__input" type="url" name="url" placeholder="Enter a URL" required>
-			<input class="url-form__input" type="submit" value="Enhance">
-		</form>
-		{{if .Enhanced}}
-			<p class="result-text">Better URL: <a href="{{.EnhancedURL}}">{{.EnhancedURL}}</a></p>
-		{{end}}
+		<header class="app-header">
+			<h1 class="app-header__title">gorter URL Enhancer</h1>
+		</header>
+		<main class="app-main">
+			<form class="url-form" method="POST" action="/enhance">
+				<label class="url-form__label">Original URL:</label><br />
+				<input class="url-form__input" type="url" name="url" placeholder="Enter a URL" required>
+				<input class="url-form__input" type="submit" value="Enhance">
+			</form>
+			{{if .Enhanced}}
+				<p class="result-text">Better URL: <a href="{{.EnhancedURL}}">{{.EnhancedURL}}</a></p>
+			{{end}}
+		</main>
 	</body>
 </html>
