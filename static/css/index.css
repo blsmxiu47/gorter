@@ -1,0 +1,38 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0 1rem;
+    padding: 0;
+    background-color: rgb(248 250 252);
+}
+
+.app-heading {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.url-form {
+    padding: 1.25rem 0;
+}
+
+.url-form__label {
+    padding: 0.5rem 0;
+    font-size: 1.25rem;
+}
+
+.url-form__input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.result-text {
+    margin: 0;
+    padding: 0.5rem 0;
+    font-size: 1.25rem;
+}
