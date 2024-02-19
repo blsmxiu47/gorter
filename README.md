@@ -6,5 +6,5 @@ A URL ~~shortener~~enhancer written Go. Probably the 18 billionth one, but tonig
 
 1. Clone the repo: `git clone https://github.com/blsmxiu47/gorter.git`
 2. Install dependencies and compile: `cd gorter && go build -o gorter.o main.go`
-3. Run the app: `./gorter.o`
+3. Run the app: `go run .`
 4. Open your browser to: `http://localhost:8080`
