@@ -38,7 +38,16 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/enhance", http.StatusSeeOther)
 		return
 	}
-	http.ServeFile(w, r, "index.html")
+	tmpl := template.Must(template.ParseFiles("templates/form.html"))
+	w.Header().Set("Content-Type", "text/html")
+	tmplUpdate := templateUpdate{
+		Enhanced:    false,
+		EnhancedURL: "",
+	}
+	err := tmpl.Execute(w, tmplUpdate)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
 }
 
 // Actually perform the URL enhancing and spit out html
